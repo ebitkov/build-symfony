@@ -1,0 +1,78 @@
+
+name: 'Build Symfony App'
+description: 'Builds and optionaly tests a Symfony app'
+
+inputs:
+  php-version:
+    description: 'PHP version to use'
+    required: false
+    default: '8.2'
+  php-extensions:
+    description: 'PHP extensions to install'
+    required: false
+    default: 'mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, json'
+
+  composer-options:
+    description: 'Additional Composer options'
+    required: false
+    default: '--prefer-dist'
+
+  symfony-environment:
+    description: 'Symfony environment to build'
+    required: false
+    default: 'test'
+
+  webpack:
+    description: 'Whether to build webpack assets or not'
+    required: false
+    default: '0'
+
+runs:
+  using: 'composite'
+  steps:
+    # Setup PHP
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ inputs.php-version }}
+        extensions: ${{ inputs.php-extensions }}
+        tools: composer, symfony
+
+    # Setup Node
+    - if: ${{ inputs.webpack == '1' }}
+      uses: actions/setup-node@v4
+      with:
+        cache: npm
+        cache-dependency-path: package-lock.json
+
+    # Fetch the repo
+    - uses: actions/checkout@v4
+
+    # Setup .env.local
+    - run: '"APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
+      shell: bash
+
+    # Validate composer.json
+    - run: composer validate
+      shell: bash
+
+    # Cache Composer
+    - id: composer-cache
+      run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      shell: bash
+    - uses: actions/cache@v3
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+
+    # Install dependencies with Composer
+    - run: symfony composer install --no-interaction --no-progress --ansi ${{ inputs.composer-options }}
+      shell: bash
+
+    # Install packages and build assets with NPM
+    - if: ${{ inputs.webpack == '1' }}
+      run: |
+        npm install
+        npm run build
+      shell: bash
