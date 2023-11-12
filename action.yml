@@ -51,6 +51,8 @@ runs:
 
     # Fetch the repo
     - uses: actions/checkout@v4
+      with:
+        repository: ${{ inputs.repository }}
 
     # Setup .env.local
     - run: 'echo "APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
