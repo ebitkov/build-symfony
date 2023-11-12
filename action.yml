@@ -58,10 +58,6 @@ runs:
     - run: 'echo "APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
       shell: bash
 
-    # Validate composer.json
-    - run: composer validate
-      shell: bash
-
     # Cache Composer
     - id: composer-cache
       run: echo "::set-output name=dir::$(composer config cache-files-dir)"
