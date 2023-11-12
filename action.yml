@@ -60,11 +60,6 @@ runs:
     - run: 'echo "APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
       shell: bash
 
-    # Install Test-Pack, if required
-    - if: ${{ inputs.run-tests == 'true' }}
-      run: symfony composer require test --no-install
-      shell: bash
-
     # Cache Composer
     - id: composer-cache
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
@@ -78,6 +73,11 @@ runs:
 
     # Install dependencies with Composer
     - run: symfony composer install --no-interaction --no-progress --ansi ${{ inputs.composer-options }}
+      shell: bash
+
+    # Install Test-Pack, if required
+    - if: ${{ inputs.run-tests == 'true' }}
+      run: symfony composer require test
       shell: bash
 
     # Install packages and build assets with NPM
