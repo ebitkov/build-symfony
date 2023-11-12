@@ -18,7 +18,7 @@ This action builds a Symfony app. You can optionally enable webpack asset buildi
     build-webpack-assets: ''
 
     # Whether to run tests with PHPUnit.
-    # runs `composer require test`, if enabled.
+    # Installs PHPUnit automatically, if enabled.
     # Default: false
     run-tests: ''
 
