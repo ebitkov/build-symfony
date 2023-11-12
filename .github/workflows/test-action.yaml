@@ -6,8 +6,11 @@ on: [ push ]
 jobs:
   build-dev:
     runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.build.outputs.cache-key }}
     steps:
-      - uses: ebitkov/build-symfony@main
+      - id: build
+        uses: ebitkov/build-symfony@main
         with:
           repository: symfony/skeleton
           cache-build: true
