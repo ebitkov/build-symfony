@@ -20,12 +20,12 @@ inputs:
   symfony-environment:
     description: 'Symfony environment to build'
     required: false
-    default: 'test'
+    default: 'dev'
 
   webpack:
     description: 'Whether to build webpack assets or not'
     required: false
-    default: '0'
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -38,7 +38,7 @@ runs:
         tools: composer, symfony
 
     # Setup Node
-    - if: ${{ inputs.webpack == '1' }}
+    - if: ${{ inputs.webpack == 'true' }}
       uses: actions/setup-node@v4
       with:
         cache: npm
@@ -71,7 +71,7 @@ runs:
       shell: bash
 
     # Install packages and build assets with NPM
-    - if: ${{ inputs.webpack == '1' }}
+    - if: ${{ inputs.webpack == 'true' }}
       run: |
         npm install
         npm run build
