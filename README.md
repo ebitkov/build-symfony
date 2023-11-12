@@ -8,7 +8,7 @@ jobs.
 ## Usage
 
 ```yaml
-- uses: ebitkov/build-symfony@main
+- uses: ebitkov/build-symfony@v1
   with:
     # Repository to fetch, passed to action/checkout.
     # See https://github.com/actions/checkout for more details.
@@ -70,7 +70,7 @@ jobs:
       cache-key: ${{ steps.build.outputs.cache-key }}
     steps:
         - id: build
-          uses: ebitkov/build-symfony@main
+          uses: ebitkov/build-symfony@v1
           with:
             cache-build: true
 
