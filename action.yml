@@ -14,6 +14,14 @@ inputs:
     description: 'Whether to run tests with PHPUnit or not'
     required: false
     default: 'false'
+  cache-build:
+    description: 'Whether to cache the build for reuse in different jobs.'
+    required: false
+    default: 'false'
+  cache-key-prefix:
+    description: 'Prefix to use for the cache key used for caching the build output.'
+    required: false
+    default: 'symfony-build-'
 
   php-version:
     description: 'PHP version to use'
@@ -37,6 +45,11 @@ inputs:
     description: 'Symfony environment to build'
     required: false
     default: 'dev'
+
+outputs:
+  cache-key:
+    description: Cache key for restoring build. Input `cache-build` has to be set to 'true'.
+    value: ${{ inputs.output-build == 'true' && format('{0}{1}', inputs.output-cache-key-prefix, github.run_id) || '' }}
 
 runs:
   using: 'composite'
@@ -97,3 +110,9 @@ runs:
     - if: ${{ inputs.run-tests == 'true' }}
       run: symfony php bin/phpunit
       shell: bash
+
+    - if: ${{ inputs.output-build == 'true' }}
+      uses: actions/cache/save@v3
+      with:
+        path: ./
+        key: ${{ inputs.output-cache-key-prefix }}${{ github.run_id }}

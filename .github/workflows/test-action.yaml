@@ -10,6 +10,18 @@ jobs:
       - uses: ebitkov/build-symfony@main
         with:
           repository: symfony/skeleton
+          cache-build: true
+
+  # Check if the build was cached correctly and can be restored
+  restore-cache:
+    needs: build-dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache/restore@v3
+        with:
+          key: ${{ needs.build-dev.outputs.cache-key }}
+          path: ./
+          fail-on-cache-miss: true
 
   build-with-webpack:
     runs-on: ubuntu-latest

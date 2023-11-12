@@ -2,6 +2,9 @@
 
 This action builds a Symfony app. You can optionally enable webpack asset building with NPM and testing with PHPUnit.
 
+The build can be saved to the [GitHub Action Cache](https://github.com/actions/cache) and restored in other steps or
+jobs.
+
 ## Usage
 
 ```yaml
@@ -21,6 +24,15 @@ This action builds a Symfony app. You can optionally enable webpack asset buildi
     # Installs PHPUnit automatically, if enabled.
     # Default: false
     run-tests: ''
+
+    # Whether to save the build to cache for later reuse.
+    # Default: false
+    cache-build: ''
+    
+    # Prefix used for the build cache key.
+    # github.run_id is always appended to the end.
+    # Default: 'symfony-build-'
+    cache-key-prefix: ''
 
     # PHP version to use.
     # Default: 8.2
@@ -46,4 +58,28 @@ This action builds a Symfony app. You can optionally enable webpack asset buildi
     # APP_ENV value.
     # Default: 'dev'
     symfony-environment: ''
+```
+
+### Reusing build files in other jobs
+
+```yaml
+jobs:
+  build:
+    # ...
+    steps:
+        - uses: ebitkov/build-symfony@main
+          with:
+            cache-build: true
+
+  next_job:
+    # ...
+    steps:
+      - needs: build
+        uses: actions/cache/restore@v3
+        with:
+          key: ${{ needs.build.outputs.cache-key }}
+          path: ./
+          fail-on-cache-miss: true
+          
+      - # next steps ...
 ```
