@@ -42,7 +42,7 @@ runs:
       with:
         php-version: ${{ inputs.php-version }}
         extensions: ${{ inputs.php-extensions }}
-        tools: composer, symfony
+        tools: composer, flex, symfony
 
     # Setup Node
     - if: ${{ inputs.webpack == 'true' }}
