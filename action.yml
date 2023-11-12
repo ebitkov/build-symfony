@@ -73,7 +73,7 @@ runs:
       shell: bash
 
     # Install additional dependencies
-    - if: ${{ inputs.composer.additional-dependencies != '' }}
+    - if: ${{ inputs.composer-additional-dependencies != '' }}
       run: symfony composer require ${{ inputs.composer-additional-dependencies }}
       shell: bash
 
