@@ -28,6 +28,10 @@ inputs:
     description: 'Additional Composer options'
     required: false
     default: '--prefer-dist'
+  composer-additional-dependencies:
+    description: 'Additional Composer dependencies to install on build.'
+    required: false
+    default: ''
 
   symfony-environment:
     description: 'Symfony environment to build'
@@ -73,6 +77,11 @@ runs:
 
     # Install dependencies with Composer
     - run: symfony composer install --no-interaction --no-progress --ansi ${{ inputs.composer-options }}
+      shell: bash
+
+    # Install additional dependencies
+    - if: ${{ inputs.composer.additional-dependencies != '' }}
+      run: symfony composer require ${{ inputs.composer-additional-dependencies }}
       shell: bash
 
     # Install Test-Pack, if required
