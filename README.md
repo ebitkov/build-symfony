@@ -66,8 +66,11 @@ jobs.
 jobs:
   build:
     # ...
+    outputs:
+      cache-key: ${{ steps.build.outputs.cache-key }}
     steps:
-        - uses: ebitkov/build-symfony@main
+        - id: build
+          uses: ebitkov/build-symfony@main
           with:
             cache-build: true
 
