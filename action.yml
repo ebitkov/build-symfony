@@ -1,4 +1,3 @@
-
 name: 'Build Symfony App'
 description: 'Builds and optionaly tests a Symfony app'
 
@@ -7,6 +6,14 @@ inputs:
     description: 'Repository to fetch'
     required: false
     default: '${{ github.repository }}'
+  build-webpack-assets:
+    description: 'Whether to build webpack assets or not'
+    required: false
+    default: 'false'
+  run-tests:
+    description: 'Whether to run tests with PHPUnit or not'
+    required: false
+    default: 'false'
 
   php-version:
     description: 'PHP version to use'
@@ -26,11 +33,6 @@ inputs:
     description: 'Symfony environment to build'
     required: false
     default: 'dev'
-
-  webpack:
-    description: 'Whether to build webpack assets or not'
-    required: false
-    default: 'false'
 
 runs:
   using: 'composite'
@@ -58,6 +60,11 @@ runs:
     - run: 'echo "APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
       shell: bash
 
+    # Install Test-Pack, if required
+    - if: ${{ inputs.run-tests == 'true' }}
+      run: symfony composer require test --no-install
+      shell: bash
+
     # Cache Composer
     - id: composer-cache
       run: echo "dir=$(composer config cache-files-dir) >> $GITHUB_OUTPUT"
@@ -78,4 +85,9 @@ runs:
       run: |
         npm install
         npm run build
+      shell: bash
+
+    # Run tests with PHPUnit
+    - if: ${{ inputs.run-tests == 'true' }}
+      run: symfony php bin/phpunit
       shell: bash
