@@ -3,6 +3,11 @@ name: 'Build Symfony App'
 description: 'Builds and optionaly tests a Symfony app'
 
 inputs:
+  repository:
+    description: 'Repository to fetch'
+    required: false
+    default: '${{ github.repository }}'
+
   php-version:
     description: 'PHP version to use'
     required: false
