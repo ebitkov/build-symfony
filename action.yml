@@ -48,13 +48,6 @@ runs:
         extensions: ${{ inputs.php-extensions }}
         tools: composer, flex, symfony
 
-    # Setup Node
-    - if: ${{ inputs.build-webpack-assets == 'true' }}
-      uses: actions/setup-node@v4
-      with:
-        cache: npm
-        cache-dependency-path: package-lock.json
-
     # Fetch the repo
     - uses: actions/checkout@v4
       with:
@@ -88,6 +81,13 @@ runs:
     - if: ${{ inputs.run-tests == 'true' }}
       run: symfony composer require test
       shell: bash
+
+    # Setup Node
+    - if: ${{ inputs.build-webpack-assets == 'true' }}
+      uses: actions/setup-node@v4
+      with:
+        cache: npm
+        cache-dependency-path: package-lock.json
 
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}
