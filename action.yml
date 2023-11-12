@@ -49,7 +49,7 @@ inputs:
 outputs:
   cache-key:
     description: Cache key for restoring build. Input `cache-build` has to be set to 'true'.
-    value: ${{ inputs.output-build == 'true' && format('{0}{1}', inputs.output-cache-key-prefix, github.run_id) || '' }}
+    value: ${{ inputs.cache-build == 'true' && format('{0}{1}', inputs.output-cache-key-prefix, github.run_id) || '' }}
 
 runs:
   using: 'composite'
@@ -111,7 +111,7 @@ runs:
       run: symfony php bin/phpunit
       shell: bash
 
-    - if: ${{ inputs.output-build == 'true' }}
+    - if: ${{ inputs.cache-build == 'true' }}
       uses: actions/cache/save@v3
       with:
         path: ./
