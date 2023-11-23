@@ -46,6 +46,11 @@ inputs:
     required: false
     default: 'dev'
 
+  github-token:
+    description: 'Github Access Token'
+    required: false
+    default: ${{ secrets.GITHUB_TOKEN }}
+
 outputs:
   cache-key:
     description: Cache key for restoring build. Input `cache-build` has to be set to 'true'.
@@ -80,6 +85,10 @@ runs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-
+
+    # Auth Composer
+    - run: "composer config --auth github-oauth.github.com ${{ inputs.github-token }}"
+      shell: bash
 
     # Install dependencies with Composer
     - run: symfony composer install --no-interaction --no-progress --ansi ${{ inputs.composer-options }}
