@@ -10,43 +10,18 @@ jobs.
 ```yaml
 - uses: ebitkov/build-symfony@v1
   with:
-    # Repository to fetch, passed to action/checkout.
-    # See https://github.com/actions/checkout for more details.
-    # Mainly used for internal testing.
-    # Default: ${{ github.repository }}
-    repository: ''
-
     # Whether to build webpack assets with NPM.
     # Default: false
     build-webpack-assets: ''
 
-    # Whether to run tests with PHPUnit.
-    # Installs PHPUnit automatically, if enabled.
-    # Default: false
-    run-tests: ''
-
     # Whether to save the build to cache for later reuse.
     # Default: false
     cache-build: ''
-    
+
     # Prefix used for the build cache key.
     # github.run_id is always appended to the end.
     # Default: 'symfony-build-'
     cache-key-prefix: ''
-
-    # PHP version to use.
-    # Default: 8.2
-    php-version: ''
-
-    # PHP extensions to install.
-    # String in CSV format.
-    # Default: 'mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, json'
-    php-extensions: ''
-
-    # Additional options passed to Composer on installation.
-    # --no-interaction --no-progress --ansi are added automatically.
-    # Default: '--prefer-dist'
-    composer-options: ''
 
     # Additional Composer dependencies to install.
     # Runs after the main installation.
@@ -54,6 +29,31 @@ jobs.
     # Multiple dependencies can be defined as space-separated (e.g. 'twig symfony/doctrine-bundle')
     # Default: null
     composer-additional-dependencies: ''
+
+    # Additional options passed to Composer on installation.
+    # --no-interaction --no-progress --ansi are added automatically.
+    # Default: '--prefer-dist'
+    composer-options: ''
+
+    # PHP extensions to install.
+    # String in CSV format.
+    # Default: 'mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, json'
+    php-extensions: ''
+
+    # PHP version to use.
+    # Default: 8.2
+    php-version: ''
+    
+    # Repository to fetch, passed to action/checkout.
+    # See https://github.com/actions/checkout for more details.
+    # Mainly used for internal testing.
+    # Default: ${{ github.repository }}
+    repository: ''
+
+    # Whether to run tests with PHPUnit.
+    # Installs PHPUnit automatically, if enabled.
+    # Default: false
+    run-tests: ''
 
     # APP_ENV value.
     # Default: 'dev'
