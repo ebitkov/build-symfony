@@ -34,6 +34,11 @@ jobs.
     # --no-interaction --no-progress --ansi are added automatically.
     # Default: '--prefer-dist'
     composer-options: ''
+    
+    # GitHub Access Token.
+    # Passed to Composer for authentication.
+    # Default: ''
+    github-token: ''
 
     # PHP extensions to install.
     # String in CSV format.
