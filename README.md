@@ -63,6 +63,10 @@ jobs.
     # APP_ENV value.
     # Default: 'dev'
     symfony-environment: ''
+
+    # Whether to download Git-LFS files.
+    # Default: false
+    lfs: ''
 ```
 
 ### Reusing build files in other jobs

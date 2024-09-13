@@ -23,6 +23,11 @@ inputs:
     required: false
     default: 'symfony-build-'
 
+  lfs:
+    description: 'Whether to download Git-LFS files'
+    required: false
+    default: 'false'
+
   php-version:
     description: 'PHP version to use'
     required: false
@@ -70,6 +75,7 @@ runs:
     - uses: actions/checkout@v4
       with:
         repository: ${{ inputs.repository }}
+        lfs: ${{ inputs.lfs }}
 
     # Setup .env.local
     - run: 'echo "APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
