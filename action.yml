@@ -113,7 +113,7 @@ runs:
 
     # Setup Node
     - if: ${{ inputs.build-webpack-assets == 'true' }}
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v6
 
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}
