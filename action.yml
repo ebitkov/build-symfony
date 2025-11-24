@@ -72,7 +72,7 @@ runs:
         tools: composer, flex, symfony
 
     # Fetch the repo
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
       with:
         repository: ${{ inputs.repository }}
         lfs: ${{ inputs.lfs }}
