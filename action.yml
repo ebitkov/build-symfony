@@ -118,8 +118,8 @@ runs:
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}
       run: |
-        npm install
-        npm run build
+        npm ci
+        npx encore production
       shell: bash
 
     # Run tests with PHPUnit
