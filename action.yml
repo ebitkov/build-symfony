@@ -121,12 +121,11 @@ runs:
       uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
-        cache: 'npm'
 
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}
       run: |
-        npm ci
+        npm install
         npx encore production
       shell: bash
 
