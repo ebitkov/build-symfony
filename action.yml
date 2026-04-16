@@ -1,5 +1,5 @@
 name: 'Build Symfony App'
-description: 'Builds and optionaly tests a Symfony app'
+description: 'Builds and optionally tests a Symfony app'
 
 inputs:
   repository:
@@ -10,6 +10,10 @@ inputs:
     description: 'Whether to build webpack assets or not'
     required: false
     default: 'false'
+  node-version:
+    description: 'Node.js version to use when building webpack assets'
+    required: false
+    default: '20'
   run-tests:
     description: 'Whether to run tests with PHPUnit or not'
     required: false
@@ -76,6 +80,7 @@ runs:
       with:
         repository: ${{ inputs.repository }}
         lfs: ${{ inputs.lfs }}
+        token: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
 
     # Setup .env.local
     - run: 'echo "APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
@@ -88,7 +93,7 @@ runs:
     - uses: actions/cache@v5
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ hashFiles('**composer.lock') }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: |
           ${{ runner.os }}-composer-
 
@@ -103,7 +108,7 @@ runs:
 
     # Install additional dependencies
     - if: ${{ inputs.composer-additional-dependencies != '' }}
-      run: symfony composer require ${{ inputs.composer-additional-dependencies }}
+      run: symfony composer require --no-interaction ${{ inputs.composer-additional-dependencies }}
       shell: bash
 
     # Install Test-Pack, if required
@@ -114,6 +119,9 @@ runs:
     # Setup Node
     - if: ${{ inputs.build-webpack-assets == 'true' }}
       uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'npm'
 
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}

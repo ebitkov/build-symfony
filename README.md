@@ -14,6 +14,10 @@ jobs.
     # Default: false
     build-webpack-assets: ''
 
+    # Node.js version to use when building webpack assets.
+    # Default: '20'
+    node-version: ''
+
     # Whether to save the build to cache for later reuse.
     # Default: false
     cache-build: ''
@@ -84,10 +88,10 @@ jobs:
             cache-build: true
 
   next_job:
+    needs: build
     # ...
     steps:
-      - needs: build
-        uses: actions/cache/restore@v3
+      - uses: actions/cache/restore@v5
         with:
           key: ${{ needs.build.outputs.cache-key }}
           path: ./
