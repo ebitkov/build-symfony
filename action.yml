@@ -6,6 +6,10 @@ inputs:
     description: 'Repository to fetch'
     required: false
     default: '${{ github.repository }}'
+  branch:
+    description: 'Target branch to fetch'
+    required: false
+    default: 'main'
   build-webpack-assets:
     description: 'Whether to build webpack assets or not'
     required: false

@@ -1,4 +1,3 @@
-
 name: Test Action
 
 on:
@@ -6,6 +5,9 @@ on:
     paths:
       - '.github/**'
       - action.yml
+
+env:
+  SYMFONY_VERSION: 8.0
 
 jobs:
   build-dev:
@@ -17,6 +19,7 @@ jobs:
         uses: ebitkov/build-symfony@main
         with:
           repository: symfony/skeleton
+          branch: ${{ env.SYMFONY_VERSION }}
           cache-build: true
 
   # Check if the build was cached correctly and can be restored
@@ -36,6 +39,7 @@ jobs:
       - uses: ebitkov/build-symfony@main
         with:
           repository: symfony/skeleton
+          branch: ${{ env.SYMFONY_VERSION }}
           composer-additional-dependencies: webpack
           build-webpack-assets: true
 
@@ -45,4 +49,5 @@ jobs:
       - uses: ebitkov/build-symfony@main
         with:
           repository: symfony/skeleton
+          branch: ${{ env.SYMFONY_VERSION }}
           run-tests: true
