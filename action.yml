@@ -113,7 +113,7 @@ runs:
 
     # Install Test-Pack, if required
     - if: ${{ inputs.run-tests == 'true' }}
-      run: symfony composer require test
+      run: symfony composer require --no-interaction --no-progress test
       shell: bash
 
     # Setup Node
@@ -122,10 +122,19 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
+    # Cache Node modules
+    - if: ${{ inputs.build-webpack-assets == 'true' }}
+      uses: actions/cache@v5
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}
       run: |
-        npm install
+        npm ci
         npx encore production
       shell: bash
 
