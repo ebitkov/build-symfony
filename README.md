@@ -50,7 +50,7 @@ jobs.
     php-extensions: ''
 
     # PHP version to use.
-    # Default: 8.2
+    # Default: 8.4
     php-version: ''
     
     # Repository to fetch, passed to action/checkout.
