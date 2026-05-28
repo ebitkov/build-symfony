@@ -7,7 +7,7 @@ on:
       - action.yml
 
 env:
-  SYMFONY_VERSION: 8.0
+  SYMFONY_VERSION: "8.0"
 
 jobs:
   build-dev:
