@@ -166,7 +166,5 @@ runs:
     - if: ${{ inputs.cache-build == 'true' }}
       uses: actions/cache/save@v5
       with:
-        path: |
-          ./
-          !./.git
+        path: ./
         key: ${{ steps.cache-key.outputs.cache-key }}
