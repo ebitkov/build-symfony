@@ -83,6 +83,7 @@ runs:
     - uses: actions/checkout@v6
       with:
         repository: ${{ inputs.repository }}
+        ref: ${{ inputs.branch }}
         lfs: ${{ inputs.lfs }}
         token: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
 
