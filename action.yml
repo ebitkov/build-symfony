@@ -83,8 +83,10 @@ runs:
         token: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
 
     # Setup .env.local
-    - run: 'echo "APP_ENV=${{ inputs.symfony-environment }}" > .env.local'
+    - run: echo "APP_ENV=$APP_ENV" > .env.local
       shell: bash
+      env:
+        APP_ENV: ${{ inputs.symfony-environment }}
 
     # Cache Composer
     - id: composer-cache
@@ -99,21 +101,27 @@ runs:
 
     # Auth Composer
     - if: ${{ inputs.github-token != '' }}
-      run: "composer config --auth github-oauth.github.com ${{ inputs.github-token }}"
+      run: composer config --auth github-oauth.github.com "$COMPOSER_TOKEN"
       shell: bash
+      env:
+        COMPOSER_TOKEN: ${{ inputs.github-token }}
 
     # Install dependencies with Composer
-    - run: symfony composer install --no-interaction --no-progress --ansi ${{ inputs.composer-options }}
+    - run: symfony composer install --no-interaction --no-progress --ansi $COMPOSER_OPTIONS
       shell: bash
+      env:
+        COMPOSER_OPTIONS: ${{ inputs.composer-options }}
 
     # Install additional dependencies
     - if: ${{ inputs.composer-additional-dependencies != '' }}
-      run: symfony composer require --no-interaction ${{ inputs.composer-additional-dependencies }}
+      run: symfony composer require --no-interaction $COMPOSER_DEPS
       shell: bash
+      env:
+        COMPOSER_DEPS: ${{ inputs.composer-additional-dependencies }}
 
     # Install Test-Pack, if required
     - if: ${{ inputs.run-tests == 'true' }}
-      run: symfony composer require --no-interaction --no-progress test
+      run: symfony composer require --no-interaction test
       shell: bash
 
     # Setup Node
@@ -127,14 +135,14 @@ runs:
       uses: actions/cache@v5
       with:
         path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
 
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}
       run: |
-        npm ci
+        npm install
         npx encore production
       shell: bash
 
@@ -145,11 +153,15 @@ runs:
 
     - id: cache-key
       if: ${{ inputs.cache-build == 'true' }}
-      run: echo "cache-key=${{ inputs.cache-key-prefix }}${{ github.run_id }}" >> $GITHUB_OUTPUT
+      run: |
+        rm -f .env.local
+        echo "cache-key=${{ inputs.cache-key-prefix }}${{ github.run_id }}" >> $GITHUB_OUTPUT
       shell: bash
 
     - if: ${{ inputs.cache-build == 'true' }}
       uses: actions/cache/save@v5
       with:
-        path: ./
+        path: |
+          ./
+          !./.git
         key: ${{ steps.cache-key.outputs.cache-key }}
