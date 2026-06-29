@@ -97,7 +97,7 @@ runs:
     - id: composer-cache
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       shell: bash
-    - uses: actions/cache@v5
+    - uses: actions/cache@v6
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
@@ -137,7 +137,7 @@ runs:
 
     # Cache Node modules
     - if: ${{ inputs.build-webpack-assets == 'true' }}
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: node_modules
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}
@@ -164,7 +164,7 @@ runs:
       shell: bash
 
     - if: ${{ inputs.cache-build == 'true' }}
-      uses: actions/cache/save@v5
+      uses: actions/cache/save@v6
       with:
         path: ./
         key: ${{ steps.cache-key.outputs.cache-key }}
