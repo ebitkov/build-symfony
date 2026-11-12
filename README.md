@@ -48,6 +48,12 @@ jobs.
     # Default: ''
     github-token: ''
 
+    # SSH private key, loaded into ssh-agent before Composer runs.
+    # Use for private packages fetched via SSH (e.g. git@github.com:org/repo.git).
+    # Pass it from a secret: ${{ secrets.SSH_PRIVATE_KEY }}
+    # Default: ''
+    ssh-private-key: ''
+
     # PHP extensions to install.
     # String in CSV format.
     # Default: 'mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, json'
