@@ -2,6 +2,9 @@
 
 This action builds a Symfony app. You can optionally enable webpack asset building with NPM and testing with PHPUnit.
 
+With `symfony-environment: prod` the build mirrors a production build: no dev dependencies, optimized autoloader,
+`composer dump-env prod` and `cache:warmup`. Note that `run-tests` installs dev dependencies.
+
 The build can be saved to the [GitHub Action Cache](https://github.com/actions/cache) and restored in other steps or
 jobs.
 
@@ -64,7 +67,7 @@ jobs.
     # Default: false
     run-tests: ''
 
-    # APP_ENV value.
+    # APP_ENV value. 'prod' enables the production build (see above).
     # Default: 'dev'
     symfony-environment: ''
 
