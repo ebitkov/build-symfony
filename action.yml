@@ -124,9 +124,9 @@ runs:
       env:
         COMPOSER_DEPS: ${{ inputs.composer-additional-dependencies }}
 
-    # Install Test-Pack, if required
+    # Install Test-Pack, if required (pulls in dev dependencies, even in prod)
     - if: ${{ inputs.run-tests == 'true' }}
-      run: symfony composer require --no-interaction test
+      run: symfony composer require --dev --no-interaction test
       shell: bash
 
     # Setup Node
@@ -154,7 +154,8 @@ runs:
 
     # Run tests with PHPUnit
     - if: ${{ inputs.run-tests == 'true' }}
-      run: symfony php bin/phpunit
+      run: |
+        if [ -f bin/phpunit ]; then symfony php bin/phpunit; else symfony php vendor/bin/phpunit; fi
       shell: bash
 
     - id: cache-key
