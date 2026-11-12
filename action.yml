@@ -135,19 +135,20 @@ runs:
       with:
         node-version: ${{ inputs.node-version }}
 
-    # Cache Node modules
+    # Cache the npm download cache (node_modules is wiped by `npm ci` anyway)
+    # ponytail: not setup-node's `cache: npm`, it fails when there is no lock file
     - if: ${{ inputs.build-webpack-assets == 'true' }}
       uses: actions/cache@v6
       with:
-        path: node_modules
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json', '**/package.json') }}
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json', '**/package.json') }}
         restore-keys: |
-          ${{ runner.os }}-node-
+          ${{ runner.os }}-npm-
 
     # Install packages and build assets with NPM
     - if: ${{ inputs.build-webpack-assets == 'true' }}
       run: |
-        npm install
+        if [ -f package-lock.json ]; then npm ci; else npm install; fi
         npx encore production
       shell: bash
 
