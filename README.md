@@ -12,7 +12,7 @@ jobs.
 ## Usage
 
 ```yaml
-- uses: ebitkov/build-symfony@v2
+- uses: ebitkov/build-symfony@v3
   with:
     # Whether to build webpack assets with NPM.
     # Default: false
@@ -108,7 +108,7 @@ jobs:
       cache-key: ${{ steps.build.outputs.cache-key }}
     steps:
         - id: build
-          uses: ebitkov/build-symfony@v2
+          uses: ebitkov/build-symfony@v3
           with:
             cache-build: true
 
