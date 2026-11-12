@@ -1,6 +1,10 @@
 # Build Symfony action
 
 This action builds a Symfony app. You can optionally enable webpack asset building with NPM and testing with PHPUnit.
+AssetMapper is detected automatically (`importmap.php`): vendor assets are installed, and compiled in `prod`.
+
+With `symfony-environment: prod` the build mirrors a production build: no dev dependencies, optimized autoloader,
+`composer dump-env prod` and `cache:warmup`. Note that `run-tests` installs dev dependencies.
 
 The build can be saved to the [GitHub Action Cache](https://github.com/actions/cache) and restored in other steps or
 jobs.
@@ -15,7 +19,7 @@ jobs.
     build-webpack-assets: ''
 
     # Node.js version to use when building webpack assets.
-    # Default: '20'
+    # Default: '24'
     node-version: ''
 
     # Whether to save the build to cache for later reuse.
@@ -23,7 +27,7 @@ jobs.
     cache-build: ''
 
     # Prefix used for the build cache key.
-    # github.run_id is always appended to the end.
+    # github.run_id and github.run_attempt are always appended to the end.
     # Default: 'symfony-build-'
     cache-key-prefix: ''
 
@@ -59,12 +63,21 @@ jobs.
     # Default: ${{ github.repository }}
     repository: ''
 
+    # Branch, tag or SHA to check out, passed to actions/checkout.
+    # Default: 'main'
+    branch: ''
+
+    # Directory (relative to the workspace) to check out and build the app in.
+    # Also the path saved to the build cache, so restore with the same `path`.
+    # Default: './'
+    path: ''
+
     # Whether to run tests with PHPUnit.
     # Installs PHPUnit automatically, if enabled.
     # Default: false
     run-tests: ''
 
-    # APP_ENV value.
+    # APP_ENV value. 'prod' enables the production build (see above).
     # Default: 'dev'
     symfony-environment: ''
 
@@ -91,7 +104,7 @@ jobs:
     needs: build
     # ...
     steps:
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           key: ${{ needs.build.outputs.cache-key }}
           path: ./

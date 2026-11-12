@@ -5,21 +5,34 @@ on:
     paths:
       - '.github/**'
       - action.yml
+  pull_request:
+    paths:
+      - '.github/**'
+      - action.yml
 
 env:
-  SYMFONY_VERSION: "8.0"
+  SYMFONY_VERSION: "8.1"
+  # ponytail: the skeleton's Symfony packages have open advisories (e.g. PKSA-g499-cm4q-v35y
+  # in symfony/filesystem <= 8.1.11) and Composer blocks them. This only tests the action,
+  # so allow them; drop this once fixed releases are out.
+  COMPOSER_NO_BLOCKING: "1"
 
+# Each job checks out this repo and runs `uses: ./`, so the commit under test is what runs.
+# The app goes into `app/`: checking it out into the workspace root would delete action.yml,
+# which the runner still needs for the post steps.
 jobs:
   build-dev:
     runs-on: ubuntu-latest
     outputs:
       cache-key: ${{ steps.build.outputs.cache-key }}
     steps:
+      - uses: actions/checkout@v7
       - id: build
-        uses: ebitkov/build-symfony@main
+        uses: ./
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
+          path: app
           cache-build: true
 
   # Check if the build was cached correctly and can be restored
@@ -30,24 +43,41 @@ jobs:
       - uses: actions/cache/restore@v6
         with:
           key: ${{ needs.build-dev.outputs.cache-key }}
-          path: ./
+          path: app
           fail-on-cache-miss: true
 
   build-with-webpack:
     runs-on: ubuntu-latest
     steps:
-      - uses: ebitkov/build-symfony@main
+      - uses: actions/checkout@v7
+      - uses: ./
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
+          path: app
           composer-additional-dependencies: webpack
           build-webpack-assets: true
+
+  build-prod-with-assetmapper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./
+        with:
+          repository: symfony/skeleton
+          branch: ${{ env.SYMFONY_VERSION }}
+          path: app
+          composer-additional-dependencies: symfony/asset-mapper
+          symfony-environment: prod
+      - run: test -f app/.env.local.php && test -d app/public/assets
 
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: ebitkov/build-symfony@main
+      - uses: actions/checkout@v7
+      - uses: ./
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
+          path: app
           run-tests: true
