@@ -17,7 +17,7 @@ inputs:
   node-version:
     description: 'Node.js version to use when building webpack assets'
     required: false
-    default: '20'
+    default: '24'
   run-tests:
     description: 'Whether to run tests with PHPUnit or not'
     required: false

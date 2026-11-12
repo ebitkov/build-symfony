@@ -15,7 +15,7 @@ jobs.
     build-webpack-assets: ''
 
     # Node.js version to use when building webpack assets.
-    # Default: '20'
+    # Default: '24'
     node-version: ''
 
     # Whether to save the build to cache for later reuse.
