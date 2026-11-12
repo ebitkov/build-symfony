@@ -5,18 +5,26 @@ on:
     paths:
       - '.github/**'
       - action.yml
+  pull_request:
+    paths:
+      - '.github/**'
+      - action.yml
 
 env:
   SYMFONY_VERSION: "8.0"
 
+# Each job checks out this repo and runs `uses: ./`, so the commit under test is what runs.
+# The action's own checkout then replaces the workspace with the skeleton; the composite
+# definition is already loaded by then.
 jobs:
   build-dev:
     runs-on: ubuntu-latest
     outputs:
       cache-key: ${{ steps.build.outputs.cache-key }}
     steps:
+      - uses: actions/checkout@v7
       - id: build
-        uses: ebitkov/build-symfony@main
+        uses: ./
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
@@ -36,7 +44,8 @@ jobs:
   build-with-webpack:
     runs-on: ubuntu-latest
     steps:
-      - uses: ebitkov/build-symfony@main
+      - uses: actions/checkout@v7
+      - uses: ./
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
@@ -46,7 +55,8 @@ jobs:
   build-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: ebitkov/build-symfony@main
+      - uses: actions/checkout@v7
+      - uses: ./
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
