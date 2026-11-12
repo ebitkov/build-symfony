@@ -23,7 +23,7 @@ jobs.
     cache-build: ''
 
     # Prefix used for the build cache key.
-    # github.run_id is always appended to the end.
+    # github.run_id and github.run_attempt are always appended to the end.
     # Default: 'symfony-build-'
     cache-key-prefix: ''
 

@@ -160,8 +160,10 @@ runs:
       if: ${{ inputs.cache-build == 'true' }}
       run: |
         rm -f .env.local
-        echo "cache-key=${{ inputs.cache-key-prefix }}${{ github.run_id }}" >> $GITHUB_OUTPUT
+        echo "cache-key=${CACHE_KEY_PREFIX}${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
       shell: bash
+      env:
+        CACHE_KEY_PREFIX: ${{ inputs.cache-key-prefix }}
 
     - if: ${{ inputs.cache-build == 'true' }}
       uses: actions/cache/save@v6
