@@ -67,6 +67,10 @@ inputs:
     description: 'Github Access Token'
     required: false
     default: ''
+  ssh-private-key:
+    description: 'SSH private key loaded into ssh-agent, for Composer packages fetched via SSH'
+    required: false
+    default: ''
 
 outputs:
   cache-key:
@@ -118,6 +122,20 @@ runs:
       working-directory: ${{ inputs.path }}
       env:
         COMPOSER_TOKEN: ${{ inputs.github-token }}
+
+    # Auth Composer via SSH
+    # ponytail: only trusts github.com host keys, add an ssh-known-hosts input when other git hosts are needed
+    - if: ${{ inputs.ssh-private-key != '' }}
+      run: |
+        eval "$(ssh-agent -s)"
+        echo "$SSH_KEY" | ssh-add -
+        echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> "$GITHUB_ENV"
+        echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> "$GITHUB_ENV"
+        mkdir -p ~/.ssh
+        ssh-keyscan -t rsa,ecdsa,ed25519 github.com >> ~/.ssh/known_hosts
+      shell: bash
+      env:
+        SSH_KEY: ${{ inputs.ssh-private-key }}
 
     # Install dependencies with Composer (prod: no dev deps, optimized autoloader)
     - run: symfony composer install --no-interaction --no-progress --ansi $PROD_FLAGS $COMPOSER_OPTIONS
