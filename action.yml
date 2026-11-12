@@ -10,6 +10,10 @@ inputs:
     description: 'Target branch to fetch'
     required: false
     default: 'main'
+  path:
+    description: 'Directory (relative to the workspace) to check out and build the app in. Also the cached path.'
+    required: false
+    default: './'
   build-webpack-assets:
     description: 'Whether to build webpack assets or not'
     required: false
@@ -84,12 +88,14 @@ runs:
       with:
         repository: ${{ inputs.repository }}
         ref: ${{ inputs.branch }}
+        path: ${{ inputs.path }}
         lfs: ${{ inputs.lfs }}
         token: ${{ inputs.github-token != '' && inputs.github-token || github.token }}
 
     # Setup .env.local
     - run: echo "APP_ENV=$APP_ENV" > .env.local
       shell: bash
+      working-directory: ${{ inputs.path }}
       env:
         APP_ENV: ${{ inputs.symfony-environment }}
 
@@ -97,6 +103,7 @@ runs:
     - id: composer-cache
       run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
       shell: bash
+      working-directory: ${{ inputs.path }}
     - uses: actions/cache@v6
       with:
         path: ${{ steps.composer-cache.outputs.dir }}
@@ -108,12 +115,14 @@ runs:
     - if: ${{ inputs.github-token != '' }}
       run: composer config --auth github-oauth.github.com "$COMPOSER_TOKEN"
       shell: bash
+      working-directory: ${{ inputs.path }}
       env:
         COMPOSER_TOKEN: ${{ inputs.github-token }}
 
     # Install dependencies with Composer (prod: no dev deps, optimized autoloader)
     - run: symfony composer install --no-interaction --no-progress --ansi $PROD_FLAGS $COMPOSER_OPTIONS
       shell: bash
+      working-directory: ${{ inputs.path }}
       env:
         COMPOSER_OPTIONS: ${{ inputs.composer-options }}
         PROD_FLAGS: ${{ inputs.symfony-environment == 'prod' && '--no-dev --optimize-autoloader' || '' }}
@@ -122,6 +131,7 @@ runs:
     - if: ${{ inputs.composer-additional-dependencies != '' }}
       run: symfony composer require --no-interaction $PROD_FLAGS $COMPOSER_DEPS
       shell: bash
+      working-directory: ${{ inputs.path }}
       env:
         COMPOSER_DEPS: ${{ inputs.composer-additional-dependencies }}
         PROD_FLAGS: ${{ inputs.symfony-environment == 'prod' && '--update-no-dev' || '' }}
@@ -130,6 +140,7 @@ runs:
     - if: ${{ inputs.run-tests == 'true' }}
       run: symfony composer require --dev --no-interaction test
       shell: bash
+      working-directory: ${{ inputs.path }}
 
     # Setup Node
     - if: ${{ inputs.build-webpack-assets == 'true' }}
@@ -153,6 +164,7 @@ runs:
         if [ -f package-lock.json ]; then npm ci; else npm install; fi
         npx encore production
       shell: bash
+      working-directory: ${{ inputs.path }}
 
     # AssetMapper (auto-detected): download vendor assets, compile them for prod
     - run: |
@@ -161,6 +173,7 @@ runs:
           if [ "$APP_ENV" = prod ]; then symfony console asset-map:compile; fi
         fi
       shell: bash
+      working-directory: ${{ inputs.path }}
       env:
         APP_ENV: ${{ inputs.symfony-environment }}
 
@@ -170,12 +183,14 @@ runs:
         symfony composer dump-env prod
         symfony console cache:warmup
       shell: bash
+      working-directory: ${{ inputs.path }}
 
     # Run tests with PHPUnit
     - if: ${{ inputs.run-tests == 'true' }}
       run: |
         if [ -f bin/phpunit ]; then symfony php bin/phpunit; else symfony php vendor/bin/phpunit; fi
       shell: bash
+      working-directory: ${{ inputs.path }}
 
     - id: cache-key
       if: ${{ inputs.cache-build == 'true' }}
@@ -183,11 +198,12 @@ runs:
         rm -f .env.local
         echo "cache-key=${CACHE_KEY_PREFIX}${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
       shell: bash
+      working-directory: ${{ inputs.path }}
       env:
         CACHE_KEY_PREFIX: ${{ inputs.cache-key-prefix }}
 
     - if: ${{ inputs.cache-build == 'true' }}
       uses: actions/cache/save@v6
       with:
-        path: ./
+        path: ${{ inputs.path }}
         key: ${{ steps.cache-key.outputs.cache-key }}

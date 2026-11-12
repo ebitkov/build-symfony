@@ -67,6 +67,11 @@ jobs.
     # Default: 'main'
     branch: ''
 
+    # Directory (relative to the workspace) to check out and build the app in.
+    # Also the path saved to the build cache, so restore with the same `path`.
+    # Default: './'
+    path: ''
+
     # Whether to run tests with PHPUnit.
     # Installs PHPUnit automatically, if enabled.
     # Default: false

@@ -14,8 +14,8 @@ env:
   SYMFONY_VERSION: "8.0"
 
 # Each job checks out this repo and runs `uses: ./`, so the commit under test is what runs.
-# The action's own checkout then replaces the workspace with the skeleton; the composite
-# definition is already loaded by then.
+# The app goes into `app/`: checking it out into the workspace root would delete action.yml,
+# which the runner still needs for the post steps.
 jobs:
   build-dev:
     runs-on: ubuntu-latest
@@ -28,6 +28,7 @@ jobs:
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
+          path: app
           cache-build: true
 
   # Check if the build was cached correctly and can be restored
@@ -38,7 +39,7 @@ jobs:
       - uses: actions/cache/restore@v6
         with:
           key: ${{ needs.build-dev.outputs.cache-key }}
-          path: ./
+          path: app
           fail-on-cache-miss: true
 
   build-with-webpack:
@@ -49,6 +50,7 @@ jobs:
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
+          path: app
           composer-additional-dependencies: webpack
           build-webpack-assets: true
 
@@ -60,9 +62,10 @@ jobs:
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
+          path: app
           composer-additional-dependencies: symfony/asset-mapper
           symfony-environment: prod
-      - run: test -f .env.local.php && test -d public/assets
+      - run: test -f app/.env.local.php && test -d app/public/assets
 
   build-and-test:
     runs-on: ubuntu-latest
@@ -72,4 +75,5 @@ jobs:
         with:
           repository: symfony/skeleton
           branch: ${{ env.SYMFONY_VERSION }}
+          path: app
           run-tests: true
