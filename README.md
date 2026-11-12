@@ -63,6 +63,10 @@ jobs.
     # Default: ${{ github.repository }}
     repository: ''
 
+    # Branch, tag or SHA to check out, passed to actions/checkout.
+    # Default: 'main'
+    branch: ''
+
     # Whether to run tests with PHPUnit.
     # Installs PHPUnit automatically, if enabled.
     # Default: false
@@ -95,7 +99,7 @@ jobs:
     needs: build
     # ...
     steps:
-      - uses: actions/cache/restore@v5
+      - uses: actions/cache/restore@v6
         with:
           key: ${{ needs.build.outputs.cache-key }}
           path: ./
