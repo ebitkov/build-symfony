@@ -34,6 +34,8 @@ jobs:
           branch: ${{ env.SYMFONY_VERSION }}
           path: app
           cache-build: true
+          secrets-decryption-key: dummy
+      - run: test "$SYMFONY_DECRYPTION_SECRET" = dummy
 
   # Check if the build was cached correctly and can be restored
   restore-cache:

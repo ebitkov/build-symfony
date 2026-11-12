@@ -71,6 +71,10 @@ inputs:
     description: 'SSH private key loaded into ssh-agent, for Composer packages fetched via SSH'
     required: false
     default: ''
+  secrets-decryption-key:
+    description: 'Symfony secrets decryption key (base64), exported as SYMFONY_DECRYPTION_SECRET'
+    required: false
+    default: ''
 
 outputs:
   cache-key:
@@ -136,6 +140,14 @@ runs:
       shell: bash
       env:
         SSH_KEY: ${{ inputs.ssh-private-key }}
+
+    # Symfony secrets: exported to all later steps (cache:clear, warmup, tests).
+    # Not written to config/secrets/, so the private key never lands in the build cache.
+    - if: ${{ inputs.secrets-decryption-key != '' }}
+      run: printf 'SYMFONY_DECRYPTION_SECRET=%s\n' "$(printf '%s' "$KEY" | tr -d '[:space:]')" >> "$GITHUB_ENV"
+      shell: bash
+      env:
+        KEY: ${{ inputs.secrets-decryption-key }}
 
     # Install dependencies with Composer (prod: no dev deps, optimized autoloader)
     - run: symfony composer install --no-interaction --no-progress --ansi $PROD_FLAGS $COMPOSER_OPTIONS
