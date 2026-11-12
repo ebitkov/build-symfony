@@ -54,6 +54,12 @@ jobs.
     # Default: ''
     ssh-private-key: ''
 
+    # Symfony secrets decryption key, exported as SYMFONY_DECRYPTION_SECRET.
+    # Generate with: php -r 'echo base64_encode(require "config/secrets/prod/prod.decrypt.private.php");'
+    # Pass it from a secret: ${{ secrets.SYMFONY_DECRYPTION_SECRET }}
+    # Default: ''
+    secrets-decryption-key: ''
+
     # PHP extensions to install.
     # String in CSV format.
     # Default: 'mbstring, xml, ctype, iconv, intl, pdo, pdo_mysql, dom, filter, gd, json'
