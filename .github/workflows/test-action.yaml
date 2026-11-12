@@ -52,6 +52,18 @@ jobs:
           composer-additional-dependencies: webpack
           build-webpack-assets: true
 
+  build-prod-with-assetmapper:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./
+        with:
+          repository: symfony/skeleton
+          branch: ${{ env.SYMFONY_VERSION }}
+          composer-additional-dependencies: symfony/asset-mapper
+          symfony-environment: prod
+      - run: test -f .env.local.php && test -d public/assets
+
   build-and-test:
     runs-on: ubuntu-latest
     steps:

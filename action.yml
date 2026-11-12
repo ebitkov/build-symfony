@@ -154,6 +154,16 @@ runs:
         npx encore production
       shell: bash
 
+    # AssetMapper (auto-detected): download vendor assets, compile them for prod
+    - run: |
+        if [ -f importmap.php ]; then
+          symfony console importmap:install
+          if [ "$APP_ENV" = prod ]; then symfony console asset-map:compile; fi
+        fi
+      shell: bash
+      env:
+        APP_ENV: ${{ inputs.symfony-environment }}
+
     # Finalize prod build: compiled env file and warm cache
     - if: ${{ inputs.symfony-environment == 'prod' }}
       run: |

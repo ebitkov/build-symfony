@@ -1,6 +1,7 @@
 # Build Symfony action
 
 This action builds a Symfony app. You can optionally enable webpack asset building with NPM and testing with PHPUnit.
+AssetMapper is detected automatically (`importmap.php`): vendor assets are installed, and compiled in `prod`.
 
 With `symfony-environment: prod` the build mirrors a production build: no dev dependencies, optimized autoloader,
 `composer dump-env prod` and `cache:warmup`. Note that `run-tests` installs dev dependencies.
